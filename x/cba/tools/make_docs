@@ -1,0 +1,40 @@
+#!/bin/sh
+
+shopt -s xpg_echo 2>/dev/null || :
+
+NATURALDOCS=`which naturaldocs 2>/dev/null`
+
+if [ -z $NATURALDOCS ]
+then
+  echo "Could not find NaturalDocs in the PATH. Install it or adjust the PATH environment variable."
+  exit 1
+fi
+
+echo "\n=== Create docs folder ===\n"
+if [ ! -d ../docs ]
+then
+  mkdir ../docs
+fi
+
+echo "\n=== move files to addons ===\n"
+cp overview.txt CBA_logo_large.png ../addons
+
+echo "\n=== move script_xeh.hpp out of xeh ===\n"
+
+mv ../addons/xeh/script_xeh.hpp .
+
+echo "\n=== Compiling documentation ===\n"
+
+$NATURALDOCS -r -i "../addons" -o HTML "../docs" -p "ndocs-project" -s Default cba
+
+echo "\n=== Cleanup ===\n"
+rm ../addons/overview.txt
+rm ../addons/CBA_logo_large.png
+
+mv script_xeh.hpp ../addons/xeh/
+
+echo "\n=== Packaging documentation ===\n"
+rm -f ../store/function_library.tar
+fakeroot tar -C ../ -cf ../store/function_library.tar docs
+
+exit 0
