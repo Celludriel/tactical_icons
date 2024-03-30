@@ -16,7 +16,10 @@ if (!isNull _parentObject) then {
 
 _totalEntitiesInRange = (getPosATL player) nearEntities [["CAManBase", "Air", "Car", "Motorcycle", "Tank"], _range];
 
-{	
+{
+  if (_x getVariable ["incapacitated",false]) exitWith {true};
+  if (_x getVariable ["surrendered",false]) exitWith {true};
+  
   if(_total_entities >= 30) exitWith { true };
 
 	_true_side = getNumber (configfile >> "CfgVehicles" >> typeOf (crew _x select 0) >> "side");
@@ -58,7 +61,13 @@ _totalEntitiesInRange = (getPosATL player) nearEntities [["CAManBase", "Air", "C
             };
 						
             call {
-                if(_true_side != 2) exitWith {
+			    
+				if ((side group _x) == civilian) exitWith {
+                    drawIcon3D [tostring (toarray("A3\ui_f\data\map\Markers\NATO\n_")) + icontype + ".paa", [0.1,0.8,0.1,0.1+brit*(0.2+_dist_x*0.012)], [visiblePosition _x select 0, visiblePosition _x select 1, (getPosATL _x select 2 )+ d],_uispace*coef_ratio,_uispace,360,"",1, 0.03,"EtelkaMonospacePro"];
+                    _total_entities = _total_entities + 1;
+				}; //green
+				
+                if (_true_side != 2) exitWith {
                     drawIcon3D [tostring (toarray("A3\ui_f\data\map\Markers\NATO\o_")) + icontype + ".paa", [1,0.3,0.3,0.1+brit*(0.2+_dist_x*0.012)], [visiblePosition _x select 0, visiblePosition _x select 1, (getPosATL _x select 2 )+ d],_uispace*coef_ratio,_uispace,360,"",1, 0.03,"EtelkaMonospacePro"];
                     _total_entities = _total_entities + 1;
                 };
